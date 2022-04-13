@@ -1,9 +1,3 @@
-#include <stdio.h>
-#include <Ticker.h>
-#include <stdbool.h>
-#include <math.h>
-
-Ticker periodicTicker; 
 
 // Define the Pin names to be used later in code
 #define wDWaveform 22
@@ -34,113 +28,122 @@ void setup() {
   pinMode(squareWave, OUTPUT);
   digitalWrite(ledOutput, LOW);
   digitalWrite(wDWaveform, LOW);
-//  digitalWrite(squareWave, LOW);
+
+  // Create the list of tasks for RTOS to control timing
+  xTaskCreate(MyTask1, "Task1", 1000, NULL, 1, NULL);
+  xTaskCreate(MyTask2, "Task2", 1000, NULL, 1, NULL);
+  xTaskCreate(MyTask3, "Task3", 1000, NULL, 1, NULL);
+  xTaskCreate(MyTask4, "Task4", 1000, NULL, 1, NULL);
+  xTaskCreate(MyTask5, "Task5", 1000, NULL, 1, NULL);
+  xTaskCreate(MyTask6, "Task6", 1000, NULL, 1, NULL);
+  xTaskCreate(MyTask7, "Task7", 1000, NULL, 1, NULL);
+  xTaskCreate(MyTask8, "Task8", 1000, NULL, 1, NULL);
+  xTaskCreate(MyTask9, "Task9", 1000, NULL, 1, NULL);
 
   // Define all array values as 0 to begin with
   voltage[0] = 0;
   voltage[1] = 0;
   voltage[2] = 0;
   voltage[3] = 0;
-  // Call the function tickerFunction once every millisecond using the ticker
-  periodicTicker.attach_ms(1, tickerFunction);
 }
 
-void tickerFunction(){
-// Execute tasks when count reaches a value thsat gives the stated modulus to time all functions at a constant rate
-  task_1();    
-  if(executionsCount%200==0)
-    task_2();
-  if(executionsCount%1000==1)
-    task_3();
-  if(executionsCount%42==0)
-    task_4();
-  if(executionsCount%42==1)
-    task_5();
-  if(executionsCount%100==0)
-    task_6();
-  if(executionsCount%333==0)
-    task_7();
-  if(executionsCount%333==1)
-    task_8();
-  if(executionsCount%500==0)
-    task_9();
-  executionsCount++;
-  Serial.println(executionsCount);
+static void MyTask1(void* pvParameters){
+  while(1){
+    Serial.println("Task 1");
+    digitalWrite(wDWaveform, HIGH);
+    delayMicroseconds(50);
+    digitalWrite(wDWaveform, LOW);
+    vTaskDelay(200);
+  }
 }
 
-void task_1(){
-  digitalWrite(wDWaveform, HIGH);
-  delayMicroseconds(50);
-  digitalWrite(wDWaveform, LOW);
-//  Serial.println("Performed Task 1");
+static void MyTask2(void* pvParameters){
+  while(1){
+    Serial.println("Task 2");
+    buttonValue = digitalRead(buttonInput);
+    Serial.println(buttonValue);
+    vTaskDelay(200);
+  }
 }
 
-void task_2(){
-  buttonValue = digitalRead(buttonInput);
-  Serial.println(buttonValue);
-//  Serial.println("Performed Task 2");
+static void MyTask3(void* pvParameters){
+  while(1){
+    Serial.println("Task 3");
+//    float high;
+//    high = pulseIn(squareWave, LOW);
+//    squareFreq = 1000000.0 / (high * 2);
+    vTaskDelay(995);
+  }
 }
 
-void task_3(){
-   float high;
-   high = pulseIn(squareWave, LOW);
-   squareFreq = 1000000.0 / (high * 2);
-   Serial.print("sad face");
-//   Serial.println("Performed Task 3);
-}
-
-void task_4(){
-  
-  for (int i = 0; i < 4; i++){
-    voltage[i] = analogRead(potInput);
-    potValue = analogRead(potInput);
-    voltValue = (3.3/4095) * potValue;
-    voltage[i - 1] = voltage [i];
+static void MyTask4(void* pvParameters){
+  while(1){
+    Serial.println("Task 4");
+    for (int i = 0; i < 4; i++){
+      voltage[i] = analogRead(potInput);
+      potValue = analogRead(potInput);
+      voltValue = (3.3/4095) * potValue;
+      voltage[i - 1] = voltage [i];
   }
     Serial.print(voltValue);
-//  Serial.print("Performed Task 4");
-}
-
-void task_5(){
-  for (int i = 0; i < 4; i++){
-    sum += voltage[i];
-    average = (sum / 4);
-//    Serial.println("Performed Task 5");
+    vTaskDelay(42);
   }
-  Serial.print((3.3/4095) * average);
-  sum = 0;
 }
 
-void task_6(){
-  for(int i=0;i<1000; i++){
-    __asm__ __volatile__ ("nop");
+static void MyTask5(void* pvParameters){
+  while(1){
+    Serial.println("Task 5");
+    for (int i = 0; i < 4; i++){
+      sum += voltage[i];
+      average = (sum / 4);
   }
-//  Serial.println("Performed Task 6");
+    Serial.print((3.3/4095) * average);
+    sum = 0;
+    vTaskDelay(42);
+  }
 }
 
-void task_7(){
-  float average_analogue_in = average;
-  if (average_analogue_in > (3.3/2))
-    error_code = 1;
-  else
-    error_code = 0;
-//  Serial.println("Performed Task 7");
+static void MyTask6(void* pvParameters){
+  while(1){
+    Serial.println("Task 6");
+    for(int i=0;i<1000; i++){
+      __asm__ __volatile__ ("nop");
+  }
+    vTaskDelay(100);
+  }
 }
 
-void task_8(){
-  if(error_code=1)
-    digitalWrite(ledOutput, HIGH);
-  else
-    digitalWrite(ledOutput, LOW);
-//  Serial.println("Performed Task 8");
-//  Serial.print(error_code);
+static void MyTask7(void* pvParameters){
+  while(1){
+    Serial.println("Task 7");
+    float average_analogue_in = average;
+    if (average_analogue_in > (3.3/2))
+      error_code = 1;
+    else
+      error_code = 0;
+    vTaskDelay(333);
+  }
 }
 
-void task_9(){
-  Serial.println(buttonValue);
-  Serial.println(squareFreq);
-  Serial.println(potInput);
-//  Serial.println("Performed Task 9");
+static void MyTask8(void* pvParameters){
+  while(1){
+    Serial.println("Task 8");
+    if(error_code=1)
+      digitalWrite(ledOutput, HIGH);
+    else
+      digitalWrite(ledOutput, LOW);
+    vTaskDelay(333);
+  }
+}
+
+static void MyTask9(void* pvParameters){
+  while(1){
+    Serial.println("Task 9");
+    Serial.println(buttonValue);
+    Serial.println(squareFreq);
+    Serial.println(potInput);
+    vTaskDelay(5000);
+  }
 }
  
 void loop() {
