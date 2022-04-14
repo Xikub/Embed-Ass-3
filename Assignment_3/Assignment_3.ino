@@ -13,6 +13,7 @@ int voltage[4];
 int error_code = 0;
 int buttonValue = 0;
 int hertz;
+int led = 0;
 float squareFreq;
 float average;
 float sum = 0.0;
@@ -39,6 +40,7 @@ void setup() {
   xTaskCreate(MyTask7, "Task7", 1000, NULL, 1, NULL);
   xTaskCreate(MyTask8, "Task8", 1000, NULL, 1, NULL);
   xTaskCreate(MyTask9, "Task9", 1000, NULL, 1, NULL);
+  xTaskCreate(MyTask10, "Task10", 1000, NULL, 1, NULL);
 
   // Define all array values as 0 to begin with
   voltage[0] = 0;
@@ -85,7 +87,7 @@ static void MyTask4(void* pvParameters){
       voltValue = (3.3/4095) * potValue;
       voltage[i - 1] = voltage [i];
   }
-    Serial.print(voltValue);
+    Serial.println(voltValue);
     vTaskDelay(42);
   }
 }
@@ -97,7 +99,7 @@ static void MyTask5(void* pvParameters){
       sum += voltage[i];
       average = (sum / 4);
   }
-    Serial.print((3.3/4095) * average);
+    Serial.println((3.3/4095) * average);
     sum = 0;
     vTaskDelay(42);
   }
@@ -117,10 +119,12 @@ static void MyTask7(void* pvParameters){
   while(1){
     Serial.println("Task 7");
     float average_analogue_in = average;
-    if (average_analogue_in > (3.3/2))
+    if (average_analogue_in >= 3.3/2)
       error_code = 1;
     else
       error_code = 0;
+    Serial.print("Error Code ");
+    Serial.println(error_code);
     vTaskDelay(333);
   }
 }
@@ -132,6 +136,9 @@ static void MyTask8(void* pvParameters){
       digitalWrite(ledOutput, HIGH);
     else
       digitalWrite(ledOutput, LOW);
+    led = digitalRead(ledOutput);
+    Serial.print("LED state ");
+    Serial.println(led);
     vTaskDelay(333);
   }
 }
@@ -145,6 +152,14 @@ static void MyTask9(void* pvParameters){
     vTaskDelay(5000);
   }
 }
- 
+
+static void MyTask10(void* pvParameters){
+  while(1){
+    if (buttonValue = 1){
+      MyTask9;
+      Serial.println("Task 10");
+    }
+  }
+} 
 void loop() {
 }
