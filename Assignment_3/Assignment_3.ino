@@ -39,15 +39,15 @@ void setup() {
 //  digitalWrite(wDWaveform, LOW);
 
   // Create the list of tasks for RTOS to control timing
-  xTaskCreate(MyTask1, "Task1", 1000, NULL, 1, NULL);
+//  xTaskCreate(MyTask1, "Task1", 1000, NULL, 1, NULL);
   xTaskCreate(MyTask2, "Task2", 1000, NULL, 1, NULL);
-  xTaskCreate(MyTask3, "Task3", 1000, NULL, 1, NULL);
-  xTaskCreate(MyTask4, "Task4", 1000, NULL, 1, NULL);
-  xTaskCreate(MyTask5, "Task5", 1000, NULL, 1, NULL);
-  xTaskCreate(MyTask6, "Task6", 1000, NULL, 1, NULL);
-  xTaskCreate(MyTask7, "Task7", 1000, NULL, 1, NULL);
-  xTaskCreate(MyTask8, "Task8", 1000, NULL, 1, NULL);
-  xTaskCreate(MyTask9, "Task9", 1000, NULL, 1, NULL);
+//  xTaskCreate(MyTask3, "Task3", 1000, NULL, 1, NULL);
+//  xTaskCreate(MyTask4, "Task4", 1000, NULL, 1, NULL);
+//  xTaskCreate(MyTask5, "Task5", 1000, NULL, 1, NULL);
+//  xTaskCreate(MyTask6, "Task6", 1000, NULL, 1, NULL);
+//  xTaskCreate(MyTask7, "Task7", 1000, NULL, 1, NULL);
+//  xTaskCreate(MyTask8, "Task8", 1000, NULL, 1, NULL);
+//  xTaskCreate(MyTask9, "Task9", 1000, NULL, 1, NULL);
   xTaskCreate(MyTask10, "Task10", 1000, NULL, 1, NULL);
 
   // Define all array values as 0 to begin with
@@ -92,7 +92,7 @@ static void MyTask3(void* pvParameters){
 static void MyTask4(void* pvParameters){
   (void) pvParameters;
    for(;;){
-//    Serial.println("Task 4");
+    Serial.println("Task 4");
     potValue = analogRead(potInput);
     voltValue = (3.3/4095) * potValue;
     for (int i = 1; i < 4; i++){
@@ -100,7 +100,7 @@ static void MyTask4(void* pvParameters){
     }
     voltage[3] = voltValue;
     
-//    Serial.println(voltValue);
+    Serial.println("Ended");
     vTaskDelay(42);
   }
 }
@@ -108,14 +108,14 @@ static void MyTask4(void* pvParameters){
 static void MyTask5(void* pvParameters){
   (void) pvParameters;
    for(;;){
-//    Serial.println("Task 5");
+    Serial.println("Task 5");
     for (int i = 0; i < 4; i++){
       sum += voltage[i];
       average = (sum / 4);
       averageVolts = ((3.3/4095) * average);
   }
-//    Serial.println(averageVolts);
-    sum = 0;
+    sum = 0;//   
+    Serial.println("Ended");
     vTaskDelay(42);
   }
 }
@@ -134,7 +134,7 @@ static void MyTask6(void* pvParameters){
 static void MyTask7(void* pvParameters){
   (void) pvParameters;
    for(;;){
-//    Serial.print("Task 7  ");
+    Serial.println("Task 7  ");
     
     float average_analogue_in = average;
 //    Serial.println(average_analogue_in);
@@ -144,7 +144,7 @@ static void MyTask7(void* pvParameters){
       error_code = 0;
     
 //    Serial.print("Error Code ");
-//    Serial.println(error_code);
+    Serial.println("Ended");
     vTaskDelay(333);
   }
 }
@@ -184,7 +184,7 @@ static void MyTask10(void* pvParameters){
       Serial.println(buttonValue);
       Serial.println(squareFreq);
       Serial.println(potInput);
-//      Serial.println("Task 10");
+      Serial.println("Task 10");
     }
   }
 } 
