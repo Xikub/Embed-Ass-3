@@ -18,5 +18,5 @@ G16(A9) is used for output to the LED of ERROR_CODE
 
 G2(A6) is used as input for analogue signal of task 4, G22 is not analogue
 
-G21(A15) is used as output for square wave 
+G15(A5) is used  xzas analogue input for wave signal
  -->

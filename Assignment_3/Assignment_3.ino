@@ -1,10 +1,17 @@
+/* Code by Colin Tipton H00300274
+ * 
+ *  Exercise to use RTOS to control timing for an ESP32 microcontroller
+ *  
+ * 
+ * 
+ */
 
 // Define the Pin names to be used later in code
-#define wDWaveform 22
+//#define wDWaveform 22
 #define ledOutput 16 
 #define buttonInput 23
 #define potInput 2
-#define squareWave 21
+#define squareWave 15
 
 // Initial settin of variables
 volatile int executionsCount = 0;
@@ -18,17 +25,18 @@ float squareFreq;
 float average;
 float sum = 0.0;
 float voltValue = 0.0;
+float averageVolts;
  
 void setup() {
  
   Serial.begin(19200);
-  // Set pin modes for initialisation as input/output and whart output to start at
+  // Set pin modes for initialisation as input/output and what output to start at
   pinMode(ledOutput, OUTPUT); 
   pinMode(buttonInput, INPUT);
   pinMode(potInput, INPUT);
-  pinMode(squareWave, OUTPUT);
+  pinMode(squareWave, INPUT);
   digitalWrite(ledOutput, LOW);
-  digitalWrite(wDWaveform, LOW);
+//  digitalWrite(wDWaveform, LOW);
 
   // Create the list of tasks for RTOS to control timing
   xTaskCreate(MyTask1, "Task1", 1000, NULL, 1, NULL);
@@ -50,64 +58,72 @@ void setup() {
 }
 
 static void MyTask1(void* pvParameters){
-  while(1){
-    Serial.println("Task 1");
-    digitalWrite(wDWaveform, HIGH);
-    delayMicroseconds(50);
-    digitalWrite(wDWaveform, LOW);
+   (void) pvParameters;
+   for(;;){
+//    Serial.println("Task 1");
+//    digitalWrite(wDWaveform, HIGH);
+//    delayMicroseconds(50);
+//    digitalWrite(wDWaveform, LOW);
     vTaskDelay(200);
   }
 }
 
 static void MyTask2(void* pvParameters){
-  while(1){
-    Serial.println("Task 2");
+  (void) pvParameters;
+   for(;;){
+//    Serial.println("Task 2");
     buttonValue = digitalRead(buttonInput);
-    Serial.println(buttonValue);
+//    Serial.println(buttonValue);
     vTaskDelay(200);
   }
 }
 
 static void MyTask3(void* pvParameters){
-  while(1){
-    Serial.println("Task 3");
-//    float high;
-//    high = pulseIn(squareWave, LOW);
-//    squareFreq = 1000000.0 / (high * 2);
+  (void) pvParameters;
+   for(;;){
+//    Serial.println("Task 3");
+//    squareFreq = pulseIn(squareWave);
+    squareFreq = ((squareFreq /4095) * 3.3);
+//    Serial.println(squareFreq);
     vTaskDelay(995);
   }
 }
 
 static void MyTask4(void* pvParameters){
-  while(1){
-    Serial.println("Task 4");
-    for (int i = 0; i < 4; i++){
-      voltage[i] = analogRead(potInput);
-      potValue = analogRead(potInput);
-      voltValue = (3.3/4095) * potValue;
+  (void) pvParameters;
+   for(;;){
+//    Serial.println("Task 4");
+    potValue = analogRead(potInput);
+    voltValue = (3.3/4095) * potValue;
+    for (int i = 1; i < 4; i++){
       voltage[i - 1] = voltage [i];
-  }
-    Serial.println(voltValue);
+    }
+    voltage[3] = voltValue;
+    
+//    Serial.println(voltValue);
     vTaskDelay(42);
   }
 }
 
 static void MyTask5(void* pvParameters){
-  while(1){
-    Serial.println("Task 5");
+  (void) pvParameters;
+   for(;;){
+//    Serial.println("Task 5");
     for (int i = 0; i < 4; i++){
       sum += voltage[i];
       average = (sum / 4);
+      averageVolts = ((3.3/4095) * average);
   }
-    Serial.println((3.3/4095) * average);
+//    Serial.println(averageVolts);
     sum = 0;
     vTaskDelay(42);
   }
 }
 
 static void MyTask6(void* pvParameters){
-  while(1){
-    Serial.println("Task 6");
+  (void) pvParameters;
+   for(;;){
+//    Serial.println("Task 6");
     for(int i=0;i<1000; i++){
       __asm__ __volatile__ ("nop");
   }
@@ -116,48 +132,59 @@ static void MyTask6(void* pvParameters){
 }
 
 static void MyTask7(void* pvParameters){
-  while(1){
-    Serial.println("Task 7");
+  (void) pvParameters;
+   for(;;){
+//    Serial.print("Task 7  ");
+    
     float average_analogue_in = average;
+//    Serial.println(average_analogue_in);
     if (average_analogue_in >= 3.3/2)
       error_code = 1;
     else
       error_code = 0;
-    Serial.print("Error Code ");
-    Serial.println(error_code);
+    
+//    Serial.print("Error Code ");
+//    Serial.println(error_code);
     vTaskDelay(333);
   }
 }
 
 static void MyTask8(void* pvParameters){
-  while(1){
-    Serial.println("Task 8");
-    if(error_code=1)
-      digitalWrite(ledOutput, HIGH);
-    else
+  (void) pvParameters;
+   for(;;){
+//    Serial.println("Task 8");
+//    Serial.println(error_code);
+    
+    if(error_code == 0)
       digitalWrite(ledOutput, LOW);
+    else
+      digitalWrite(ledOutput, HIGH);
     led = digitalRead(ledOutput);
-    Serial.print("LED state ");
-    Serial.println(led);
+//    Serial.print("LED state ");
+//    Serial.println(led);
     vTaskDelay(333);
   }
 }
 
 static void MyTask9(void* pvParameters){
-  while(1){
+  (void) pvParameters;
+   for(;;){
     Serial.println("Task 9");
-    Serial.println(buttonValue);
-    Serial.println(squareFreq);
-    Serial.println(potInput);
+//    Serial.println(buttonValue);
+//    Serial.println(squareFreq);
+//    Serial.println(potInput);
     vTaskDelay(5000);
   }
 }
 
 static void MyTask10(void* pvParameters){
-  while(1){
-    if (buttonValue = 1){
-      MyTask9;
-      Serial.println("Task 10");
+  (void) pvParameters;
+   for(;;){
+    if (buttonValue == 1){
+      Serial.println(buttonValue);
+      Serial.println(squareFreq);
+      Serial.println(potInput);
+//      Serial.println("Task 10");
     }
   }
 } 
